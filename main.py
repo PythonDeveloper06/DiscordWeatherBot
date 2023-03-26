@@ -27,7 +27,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     channel = bot.get_channel(1089208954556522537)
-    await channel.send(f'Hello {member.mention}')
+    await channel.send(f'Добро пожаловать {member.mention} в {member.guild.name}')
 
 
 @bot.command(name='weather')
