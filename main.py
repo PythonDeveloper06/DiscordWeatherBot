@@ -26,10 +26,8 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    guild = member.guild
-    if guild.system_channel is not None:
-        to_send = f'Welcome {member.mention} to {guild.name}!'
-        await guild.system_channel.send(to_send)
+    channel = bot.get_channel(1089208954556522537)
+    await channel.send(f'Hello {member.mention}')
 
 
 @bot.command(name='weather')
