@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/mixins.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/conf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -103,7 +103,28 @@
       <option name="project" value="LOCAL" />
       <updated>1679824608961</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Develop DWB">
+      <created>1679826967811</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1679826967811</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Update_join_new_member">
+      <created>1679827387218</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1679827387218</updated>
+    </task>
+    <task id="LOCAL-00007" summary="remove_member">
+      <created>1679828229358</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1679828229358</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -111,6 +132,9 @@
     <MESSAGE value="Second commit" />
     <MESSAGE value="Third commit" />
     <MESSAGE value="Start DWB" />
-    <option name="LAST_COMMIT_MESSAGE" value="Start DWB" />
+    <MESSAGE value="Develop DWB" />
+    <MESSAGE value="Update_join_new_member" />
+    <MESSAGE value="remove_member" />
+    <option name="LAST_COMMIT_MESSAGE" value="remove_member" />
   </component>
 </project>
