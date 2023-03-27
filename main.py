@@ -1,8 +1,9 @@
 import discord
-from discord import Message
-from discord.ext import commands
+from discord import Member
+from discord.ext.commands import Bot, Context
 import logging
 import asyncio
+
 
 from conf import TOKEN
 from mixins import on_member
@@ -14,7 +15,7 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-bot = commands.Bot(command_prefix='/', intents=intents)
+bot = Bot(command_prefix='/', intents=intents)
 
 
 @bot.event
@@ -28,17 +29,21 @@ async def on_ready() -> None:
 
 
 @bot.event
-async def on_member_join(member: discord.Member) -> None:
-    asyncio.create_task(on_member('Привет', bot, member))
+async def on_member_join(member: Member) -> None:
+    await member.create_dm()
+    await member.dm_channel.send(
+        f'Привет, {member.name}!'
+    )
+    asyncio.create_task(on_member('Добро пожаловать,', bot, member))
 
 
 @bot.event
-async def on_member_remove(member: discord.Member) -> None:
-    asyncio.create_task(on_member('Пока', bot, member))
+async def on_member_remove(member: Member) -> None:
+    asyncio.create_task(on_member('Наш канал покидает', bot, member))
 
 
 @bot.command(name='weather', description="Get weather")
-async def text(ctx: Message, city: str) -> None:
+async def weather(ctx: Context,  city: str) -> None:
     await ctx.send(embed=discord.Embed(title=f'Your city {city.capitalize()}', description='Wait a one minute...'))
 
 

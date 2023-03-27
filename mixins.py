@@ -8,4 +8,4 @@ async def on_member(word: str, bot: Bot, member: Member) -> Message:
         if guild == member.guild:
             for tc in guild.text_channels:
                 channel: TextChannel = bot.get_channel(tc.id)
-                return await channel.send(f'{word} {member.mention}')
+                return await channel.send(f'{word} {member.name}')
