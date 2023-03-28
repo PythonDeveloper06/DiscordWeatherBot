@@ -4,8 +4,8 @@
     <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="remove_member">
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/conf.py" beforeDir="false" afterPath="$PROJECT_DIR$/conf.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/mixins.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -131,7 +131,14 @@
       <option name="project" value="LOCAL" />
       <updated>1679912846678</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="update values">
+      <created>1679934111966</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1679934111966</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -143,6 +150,7 @@
     <MESSAGE value="Update_join_new_member" />
     <MESSAGE value="remove_member" />
     <MESSAGE value="add mixin and type values" />
-    <option name="LAST_COMMIT_MESSAGE" value="add mixin and type values" />
+    <MESSAGE value="update values" />
+    <option name="LAST_COMMIT_MESSAGE" value="update values" />
   </component>
 </project>

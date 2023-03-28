@@ -1,13 +1,12 @@
+import datetime
+import asyncio
 import discord
 from discord import Member
 from discord.ext.commands import Bot, Context
 import logging
-import asyncio
-import requests
-import json
+import aiohttp
 
-
-from conf import TOKEN
+from config import TOKEN, API_KEY
 from mixins import on_member
 
 logger = logging.getLogger('discord')
@@ -17,8 +16,8 @@ intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
 
-api_key = ''
 color = 0x00FFFF
+HPa_to_mmHg = 0.750064
 
 bot = Bot(command_prefix='/', intents=intents)
 
@@ -36,65 +35,72 @@ async def on_ready() -> None:
 @bot.event
 async def on_member_join(member: Member) -> None:
     await member.create_dm()
-    await member.dm_channel.send(
-        f'Привет, {member.name}!'
+    message = discord.Embed(
+        title=f'Привет, {member.name}!',
+        color=color,
+        timestamp=datetime.datetime.now()
     )
+    message.add_field(
+        name='Это погодный бот, который будет полезнен, когда потребуется узнать погоду, не выходя из дискорда. '
+             'Он очень удобен и прост в использовании.\n\n'
+             'Основные команды:\n',
+        value='/weather {city}: показывает погоду на данный момент заданного города',
+    )
+    await member.dm_channel.send(embed=message)
     asyncio.create_task(on_member('Добро пожаловать,', bot, member))
 
 
 @bot.event
 async def on_member_remove(member: Member) -> None:
-    asyncio.create_task(on_member('Наш канал покидает', bot, member))
+    asyncio.create_task(on_member('Наш сервер покидает', bot, member))
 
 
 @bot.command(name='weather')
-async def weather(ctx: Context,  city: str) -> None:
-    location = city
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={location}&units=metric&lang=ru&appid={api_key}'
-    data = json.loads(requests.get(url).content)
+async def text(ctx: Context, city: str) -> None:
+    async with aiohttp.ClientSession() as session:
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+        async with session.get(url) as res:
+            data = await res.json()
     channel = ctx.message.channel
 
-    if data['cod'] != "404":
-        async with channel.typing():
-            weather = data['weather']
-            description = weather[0]['description']
-            icon = weather[0]['icon']
+    if data['cod'] != '404':
+        description = data['weather'][0]['description']
+        icon = data['weather'][0]['icon']
 
-            main = data['main']
-            temperature = main['temp']
-            feels_like = main['feels_like']
-            pressure = main['pressure']
-            humidity = main['humidity']
+        temperature = data['main']['temp']
+        feels_like = data['main']['feels_like']
+        pressure = data['main']['pressure']
+        humidity = data['main']['humidity']
 
-            wind = data['wind']
-            speed = wind['speed']
+        speed = data['wind']['speed']
 
-            message = discord.Embed(
-                title=f"Погода в {location}",
-                color=color,
-                timestamp=ctx.message.created_at
-            )
-            message.add_field(
-                name="Описание", value=f"**{description}**", inline=False)
-            message.add_field(
-                name="Температура", value=f"**{temperature}°C**", inline=False)
-            message.add_field(
-                name="Ощущается", value=f"**{feels_like}°C**", inline=False)
-            message.add_field(
-                name="Влажность", value=f"**{humidity}%**", inline=False)
-            message.add_field(
-                name="Атмосферное давление", value=f"**{pressure}hPa**", inline=False)
-            message.add_field(
-                name="Скорость ветра", value=f"**{speed}м/с**", inline=False)
+        message = discord.Embed(
+            title=f"Погода в {city.capitalize()}",
+            color=color,
+            timestamp=ctx.message.created_at
+        )
+        message.add_field(
+            name="Описание", value=f"**{description.capitalize()}**", inline=False)
+        message.add_field(
+            name="Температура", value=f"**{temperature}°C**", inline=False)
+        message.add_field(
+            name="Ощущается", value=f"**{feels_like}°C**", inline=False)
+        message.add_field(
+            name="Влажность", value=f"**{humidity}%**", inline=False)
+        message.add_field(
+            name="Атмосферное давление", value=f"**{round(pressure * HPa_to_mmHg)}мм рт ст**", inline=False)
+        message.add_field(
+            name="Скорость ветра", value=f"**{speed}м/с**", inline=False)
 
-            message.set_thumbnail(url=f"https://openweathermap.org/img/wn/{icon}@2x.png")
+        message.set_thumbnail(url=f"https://openweathermap.org/img/wn/{icon}@2x.png")
 
-            message.set_footer(text=f"Запрошено {ctx.author.name}")
+        message.set_footer(text=f"Запрошено {ctx.author.name}")
         await channel.send(embed=message)
+
     else:
         error_message = discord.Embed(
             title='Ошибка',
-            description=f'Произошла ошибка при получении данных о погоде для {location}.',
+            description=f'Произошла ошибка при получении данных о погоде для {city}.',
             color=color
         )
         await channel.send(embed=error_message)
