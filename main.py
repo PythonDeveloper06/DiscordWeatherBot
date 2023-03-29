@@ -41,10 +41,9 @@ async def on_member_join(member: Member) -> None:
         timestamp=datetime.datetime.now()
     )
     message.add_field(
-        name='Это погодный бот, который будет полезнен, когда потребуется узнать погоду, не выходя из дискорда. '
-             'Он очень удобен и прост в использовании.\n\n'
-             'Основные команды:\n',
-        value='/weather {city}: показывает погоду на данный момент заданного города',
+        name='Я погодный бот',
+        value='*Чтобы узнать больше обо мне, напиши в чат сервера команду:*\n'
+              '*/support*',
     )
     await member.dm_channel.send(embed=message)
     asyncio.create_task(on_member('Добро пожаловать,', bot, member))
@@ -53,6 +52,25 @@ async def on_member_join(member: Member) -> None:
 @bot.event
 async def on_member_remove(member: Member) -> None:
     asyncio.create_task(on_member('Наш сервер покидает', bot, member))
+
+
+@bot.command(name='support')
+async def support(ctx):
+    channel = ctx.message.channel
+    message = discord.Embed(
+        title='Описание',
+        color=color,
+        timestamp=ctx.message.created_at
+    )
+    message.add_field(
+        name='Погодный бот',
+        value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
+              '*Это чень удобно и просто в использовании.*\n'
+              'Основные команды:\n'
+              '*/weather {city}: показывает погоду на данный момент заданного города;*\n'
+              '*/support: показывает то, что может погодный бот.*'
+    )
+    await channel.send(embed=message)
 
 
 @bot.command(name='weather')
@@ -88,7 +106,7 @@ async def text(ctx: Context, city: str) -> None:
         message.add_field(
             name="Влажность", value=f"**{humidity}%**", inline=False)
         message.add_field(
-            name="Атмосферное давление", value=f"**{round(pressure * HPa_to_mmHg)}мм рт ст**", inline=False)
+            name="Атмосферное давление", value=f"**{round(pressure * HPa_to_mmHg)}мм рт. ст.**", inline=False)
         message.add_field(
             name="Скорость ветра", value=f"**{speed}м/с**", inline=False)
 
