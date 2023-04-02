@@ -39,7 +39,7 @@
     &quot;last_opened_file_path&quot;: &quot;C:/Users/ledne/OneDrive/Рабочий стол/Питон/Django-Flask_FastAPI/FastAPI-Yandex&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.debugs">
+  <component name="RunManager" selected="Python.main">
     <configuration name="debugs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="DiscordWeatherBot" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -126,8 +126,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.debugs" />
         <item itemvalue="Python.main" />
+        <item itemvalue="Python.debugs" />
         <item itemvalue="Python.number_2" />
         <item itemvalue="Python.number_3" />
       </list>
@@ -247,7 +247,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680433703749</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="change values of generator, correction mistakes and refactor code">
+      <created>1680437857267</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1680437857268</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -288,6 +295,7 @@
     <MESSAGE value="update info" />
     <MESSAGE value="add new command forecast and update code" />
     <MESSAGE value="refactor code" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor code" />
+    <MESSAGE value="change values of generator, correction mistakes and refactor code" />
+    <option name="LAST_COMMIT_MESSAGE" value="change values of generator, correction mistakes and refactor code" />
   </component>
 </project>

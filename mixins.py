@@ -1,8 +1,9 @@
+import datetime
 from typing import AsyncGenerator, Generator
 import aiohttp
 import discord
 from aiohttp import ClientResponse
-from discord import Member, Message
+from discord import Member, Message, Interaction, Embed
 from discord.ext.commands import Bot, Context
 from discord.channel import TextChannel
 
@@ -59,11 +60,11 @@ def from_message(info: tuple) -> Generator[list, tuple, None]:
                 break
 
 
-def add_message(func: Generator[list, tuple, None], ctx: Context, name: str) -> discord.Embed:
-    message = discord.Embed(
+def add_message(func: Generator[list, tuple, None], interaction: Interaction, name: str) -> Embed:
+    message = Embed(
         title=f"Погода в {name}",
         color=color,
-        timestamp=ctx.message.created_at
+        timestamp=datetime.datetime.now()
     )
 
     for dt in func:
@@ -87,23 +88,22 @@ def add_message(func: Generator[list, tuple, None], ctx: Context, name: str) -> 
 
         message.set_thumbnail(url=f"https://openweathermap.org/img/wn/{dt[1]}@2x.png")
 
-        message.set_footer(text=f"Запрошено {ctx.author.name}")
+        message.set_footer(text=f"Запрошено {interaction.user.name}")
 
     return message
 
 
-async def material(channel: TextChannel, ctx: Context, info: tuple) -> discord.Embed:
+async def material(interaction: Interaction, info: tuple) -> Embed:
     if info[0]['cod'] != '404':
-        async with channel.typing():
-            if 'list' not in info[0]:
-                name = info[0]['name']
-            else:
-                name = info[0]['city']['name']
-        return add_message(from_message(info), ctx, name)
+        if 'list' not in info[0]:
+            name = info[0]['name']
+        else:
+            name = info[0]['city']['name']
+        return add_message(from_message(info), interaction, name)
     else:
-        error_message = discord.Embed(
+        error_message = Embed(
             title='Ошибка',
-            description=f'Произошла ошибка при получении данных о погоде для {ctx.author.name}.\n'
+            description=f'Произошла ошибка при получении данных о погоде для {interaction.user.name}.\n'
                         f'*Проверьте, верно ли введено название города.*',
             color=color
         )

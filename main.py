@@ -2,8 +2,8 @@ import datetime
 import asyncio
 
 import discord
-from discord import Member
-from discord.ext.commands import Bot, Context
+from discord import Member, Interaction
+from discord.ext.commands import Bot
 import logging
 
 from config import TOKEN, API_KEY
@@ -30,6 +30,7 @@ async def on_ready() -> None:
             f'{bot.user} подключился к чату:\n'
             f'{guild.name} (ID: {guild.id})'
         )
+    await bot.tree.sync()
 
 
 @bot.event
@@ -54,44 +55,41 @@ async def on_member_remove(member: Member) -> None:
     asyncio.create_task(on_member('Наш сервер покидает', bot, member))
 
 
-@bot.command(name='support')
-async def support(ctx):
-    channel = ctx.message.channel
+@bot.tree.command(name='support', description='Support')
+async def support(interaction: Interaction):
     message = discord.Embed(
         title='Описание',
         color=color,
-        timestamp=ctx.message.created_at
+        timestamp=datetime.datetime.now()
     )
     message.add_field(
         name='Погодный бот',
         value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
-              '*Это чень удобно и просто в использовании.*\n'
+              '*Это очень удобно и просто в использовании.*\n'
               'Основные команды:\n'
               '*/weather {city}: показывает погоду на данный момент заданного города;*\n'
-              '*/forecast {city}: показывает погоду на ближайшее время, 3 и на 6 часов вперёд*'
+              '*/forecast {city}: показывает погоду на ближайшее время, 3 и на 6 часов вперёд;*\n'
               '*/support: показывает то, что может погодный бот.*'
     )
-    await channel.send(embed=message)
+    await interaction.response.send_message(embed=message, ephemeral=True)
 
 
-@bot.command(name='weather')
-async def api(ctx: Context, city: str) -> None:
+@bot.tree.command(name='weather', description='Get weather')
+async def weather(interaction: Interaction, city: str) -> None:
     url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
     data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
-    channel = ctx.message.channel
 
-    message_or_error_message = await material(channel, ctx, data)
-    await channel.send(embed=message_or_error_message)
+    message_or_error_message = await material(interaction, data)
+    await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
 
 
-@bot.command(name='forecast')
-async def _forecast(ctx: Context, city: str) -> None:
+@bot.tree.command(name='forecast', description='Get weather for the nearest time, 3 and 6 hours ahead')
+async def forecast(interaction: Interaction, city: str) -> None:
     url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&lang=ru&appid={API_KEY}'
     data = await asyncio.gather(api_weather(url))
-    channel = ctx.message.channel
 
-    message_or_error_message = await material(channel, ctx, data)
-    await channel.send(embed=message_or_error_message)
+    message_or_error_message = await material(interaction, data)
+    await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
 
 
 bot.run(TOKEN)
