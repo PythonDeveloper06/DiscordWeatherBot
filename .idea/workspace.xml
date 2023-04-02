@@ -4,6 +4,7 @@
     <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="update info">
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/mixins.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,7 +39,7 @@
     &quot;last_opened_file_path&quot;: &quot;C:/Users/ledne/OneDrive/Рабочий стол/Питон/Django-Flask_FastAPI/FastAPI-Yandex&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.debugs">
     <configuration name="debugs" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="DiscordWeatherBot" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -125,8 +126,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.debugs" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.number_2" />
         <item itemvalue="Python.number_3" />
       </list>
@@ -239,7 +240,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680371262820</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="refactor code">
+      <created>1680433703749</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1680433703749</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -279,6 +287,7 @@
     <MESSAGE value="update something" />
     <MESSAGE value="update info" />
     <MESSAGE value="add new command forecast and update code" />
-    <option name="LAST_COMMIT_MESSAGE" value="add new command forecast and update code" />
+    <MESSAGE value="refactor code" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor code" />
   </component>
 </project>

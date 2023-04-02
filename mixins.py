@@ -24,7 +24,7 @@ async def api_weather(url: str) -> ClientResponse:
             return await res.json()
 
 
-def from_message(info: tuple) -> Generator[list, None, None]:
+def from_message(info: tuple) -> Generator[list, tuple, None]:
     count = 0
     if 'list' not in info[0]:
         description = info[0]['weather'][0]['description']
@@ -37,7 +37,7 @@ def from_message(info: tuple) -> Generator[list, None, None]:
 
         speed = info[0]['wind']['speed']
 
-        yield [description, icon, temperature, feels_like, pressure, humidity, speed]
+        yield description, icon, temperature, feels_like, pressure, humidity, speed
     else:
         for index, inf in enumerate(info[0]['list']):
             if count != 3:
@@ -50,17 +50,16 @@ def from_message(info: tuple) -> Generator[list, None, None]:
                 humidity = info[0]['list'][index + 2]['main']['humidity']
 
                 speed = info[0]['list'][index + 2]['wind']['speed']
-
                 date = info[0]['list'][index + 2]['dt_txt']
 
                 count += 1
 
-                yield [description, icon, temperature, feels_like, pressure, humidity, speed, date]
+                yield description, icon, temperature, feels_like, pressure, humidity, speed, date
             else:
                 break
 
 
-def add_message(func: Generator[list, None, None], ctx: Context, name: str) -> discord.Embed:
+def add_message(func: Generator[list, tuple, None], ctx: Context, name: str) -> discord.Embed:
     message = discord.Embed(
         title=f"Погода в {name}",
         color=color,
@@ -100,10 +99,7 @@ async def material(channel: TextChannel, ctx: Context, info: tuple) -> discord.E
                 name = info[0]['name']
             else:
                 name = info[0]['city']['name']
-            if 'list' not in info[0]:
-                return add_message(from_message(info), ctx, name)
-            else:
-                return add_message(from_message(info), ctx, name)
+        return add_message(from_message(info), ctx, name)
     else:
         error_message = discord.Embed(
             title='Ошибка',
