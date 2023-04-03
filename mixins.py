@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import aiohttp
 from aiohttp import ClientResponse
 from discord import Member, Message, Interaction, Embed
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, Context
 from discord.channel import TextChannel
 
 color = 0x00FFFF
@@ -58,7 +58,7 @@ async def from_message(info: tuple) -> AsyncGenerator[list, tuple]:
                 break
 
 
-async def add_message(func: AsyncGenerator[list, tuple], interaction: Interaction, name: str) -> Embed:
+async def add_message(func: AsyncGenerator[list, tuple], name: str, user: str) -> Embed:
     message = Embed(
         title=f"Погода в {name}",
         color=color,
@@ -86,22 +86,20 @@ async def add_message(func: AsyncGenerator[list, tuple], interaction: Interactio
 
         message.set_thumbnail(url=f"https://openweathermap.org/img/wn/{dt[1]}@2x.png")
 
-        message.set_footer(text=f"Запрошено {interaction.user.name}")
+        message.set_footer(text=f"Запрошено {user}")
 
     return message
 
 
-async def material(interaction: Interaction, info: tuple) -> Embed:
+async def material(interaction: Interaction | Context, info: tuple) -> Embed:
+    user = interaction.author.name if interaction.__class__ == Context else interaction.user.name
     if info[0]['cod'] != '404':
-        if 'list' not in info[0]:
-            name = info[0]['name']
-        else:
-            name = info[0]['city']['name']
-        return await add_message(from_message(info), interaction, name)
+        name = info[0]['name'] if 'list' not in info[0] else info[0]['city']['name']
+        return await add_message(from_message(info), name, user)
     else:
         error_message = Embed(
             title='Ошибка',
-            description=f'Произошла ошибка при получении данных о погоде для {interaction.user.name}.\n'
+            description=f'Произошла ошибка при получении данных о погоде для {user}.\n'
                         f'*Проверьте, верно ли введено название города.*',
             color=color
         )

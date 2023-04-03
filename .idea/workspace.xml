@@ -261,7 +261,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680455332325</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="did async function and update code">
+      <created>1680520785131</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1680520785131</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -304,6 +311,7 @@
     <MESSAGE value="refactor code" />
     <MESSAGE value="change values of generator, correction mistakes and refactor code" />
     <MESSAGE value="add slash command" />
-    <option name="LAST_COMMIT_MESSAGE" value="add slash command" />
+    <MESSAGE value="did async function and update code" />
+    <option name="LAST_COMMIT_MESSAGE" value="did async function and update code" />
   </component>
 </project>

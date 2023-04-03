@@ -2,8 +2,8 @@ import datetime
 import asyncio
 
 import discord
-from discord import Member, Interaction, app_commands, Embed
-from discord.ext.commands import Bot
+from discord import Member, Interaction, app_commands
+from discord.ext.commands import Bot, Context
 import logging
 
 from config import TOKEN, API_KEY
@@ -67,22 +67,42 @@ async def support(interaction: Interaction):
         value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
               '*Это очень удобно и просто в использовании.*\n'
               'Основные команды:\n'
-              '*/weather {city}: показывает погоду на данный момент заданного города;*\n'
-              '*/forecast {city}: показывает погоду на ближайшее время, 3 и на 6 часов вперёд;*\n'
+              '*/weather {city} {weather output}:*\n'
+              '**1.) {weather output} = Now: показывает погоду на данный момент заданного города;**\n'
+              '**2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;**\n'
               '*/support: показывает то, что может погодный бот.*'
     )
     await interaction.response.send_message(embed=message, ephemeral=True)
 
 
 @bot.tree.command(name='weather', description='Get weather now or for the near future')
-@app_commands.choices(check_weather=[app_commands.Choice(name='Now', value='weather'),
-                                     app_commands.Choice(name='Forecast', value='forecast')])
-async def weather_and_forecast(interaction: Interaction, city: str, check_weather: app_commands.Choice[str]) -> None:
-    url = f'http://api.openweathermap.org/data/2.5/{check_weather.value}?q={city}&units=metric&lang=ru&appid={API_KEY}'
+@app_commands.choices(weather_output=[app_commands.Choice(name='Now', value='weather'),
+                                      app_commands.Choice(name='Forecast', value='forecast')])
+async def weather_and_forecast(interaction: Interaction, city: str, weather_output: app_commands.Choice[str]) -> None:
+    url = f'http://api.openweathermap.org/data/2.5/{weather_output.value}?q={city}&units=metric&lang=ru&appid={API_KEY}'
     data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
     message_or_error_message = await material(interaction, data)
     await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
+
+
+@bot.command(name='set_time')
+async def set_time(ctx: Context, city: str, dt: str) -> None:
+    h, m = dt.split(':')
+
+    now = datetime.datetime.now()
+    # then = now + datetime.timedelta(days=1)
+    then = now.replace(hour=int(h), minute=int(m))
+    wait_time = (then - now).total_seconds()
+
+    await asyncio.sleep(wait_time)
+
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+    data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+
+    message_or_error_message = await material(ctx, data)
+
+    await ctx.author.send(embed=message_or_error_message)
 
 
 bot.run(TOKEN)
