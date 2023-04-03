@@ -68,9 +68,11 @@ async def support(interaction: Interaction):
               '*Это очень удобно и просто в использовании.*\n'
               'Основные команды:\n'
               '*/weather {city} {weather output}:*\n'
-              '**1.) {weather output} = Now: показывает погоду на данный момент заданного города;**\n'
-              '**2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;**\n'
-              '*/support: показывает то, что может погодный бот.*'
+              '*1.) {weather output} = Now: показывает погоду на данный момент заданного города;*\n'
+              '*2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;*\n'
+              '*/support: показывает то, что может погодный бот;*\n'
+              '*/set_time {city} {time (формат HH:MM)}: в установленное время бот выведет вам в личное сообщение '
+              'актуальную погоду*'
     )
     await interaction.response.send_message(embed=message, ephemeral=True)
 
@@ -89,7 +91,9 @@ async def weather_and_forecast(interaction: Interaction, city: str, weather_outp
 @bot.command(name='set_time')
 async def set_time(ctx: Context, city: str, dt: str) -> None:
     h, m = dt.split(':')
-
+    # while True для продакшнеа. В ТЕСТИРОВАНИИ НЕ ИСПОЛЬЗОВАТЬ! ЗАЦИКЛИТСЯ!
+    # Для тестирования while true закомментировать
+    # while True:
     now = datetime.datetime.now()
     # then = now + datetime.timedelta(days=1)
     then = now.replace(hour=int(h), minute=int(m))

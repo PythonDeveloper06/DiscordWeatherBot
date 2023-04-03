@@ -1,5 +1,5 @@
 import datetime
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Union
 import aiohttp
 from aiohttp import ClientResponse
 from discord import Member, Message, Interaction, Embed
@@ -91,7 +91,7 @@ async def add_message(func: AsyncGenerator[list, tuple], name: str, user: str) -
     return message
 
 
-async def material(interaction: Interaction | Context, info: tuple) -> Embed:
+async def material(interaction: Union[Interaction, Context], info: tuple) -> Embed:
     user = interaction.author.name if interaction.__class__ == Context else interaction.user.name
     if info[0]['cod'] != '404':
         name = info[0]['name'] if 'list' not in info[0] else info[0]['city']['name']
