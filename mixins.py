@@ -1,10 +1,9 @@
 import datetime
-from typing import AsyncGenerator, Generator
+from typing import AsyncGenerator
 import aiohttp
-import discord
 from aiohttp import ClientResponse
 from discord import Member, Message, Interaction, Embed
-from discord.ext.commands import Bot, Context
+from discord.ext.commands import Bot
 from discord.channel import TextChannel
 
 color = 0x00FFFF
@@ -25,8 +24,7 @@ async def api_weather(url: str) -> ClientResponse:
             return await res.json()
 
 
-def from_message(info: tuple) -> Generator[list, tuple, None]:
-    count = 0
+async def from_message(info: tuple) -> AsyncGenerator[list, tuple]:
     if 'list' not in info[0]:
         description = info[0]['weather'][0]['description']
         icon = info[0]['weather'][0]['icon']
@@ -41,33 +39,33 @@ def from_message(info: tuple) -> Generator[list, tuple, None]:
         yield description, icon, temperature, feels_like, pressure, humidity, speed
     else:
         for index, inf in enumerate(info[0]['list']):
-            if count != 3:
-                description = info[0]['list'][index + 2]['weather'][0]['description']
-                icon = info[0]['list'][index + 2]['weather'][0]['icon']
+            if index != 3:
+                base = info[0]['list'][index + 2]
 
-                temperature = info[0]['list'][index + 2]['main']['temp']
-                feels_like = info[0]['list'][index + 2]['main']['feels_like']
-                pressure = info[0]['list'][index + 2]['main']['pressure']
-                humidity = info[0]['list'][index + 2]['main']['humidity']
+                description = base['weather'][0]['description']
+                icon = base['weather'][0]['icon']
 
-                speed = info[0]['list'][index + 2]['wind']['speed']
-                date = info[0]['list'][index + 2]['dt_txt']
+                temperature = base['main']['temp']
+                feels_like = base['main']['feels_like']
+                pressure = base['main']['pressure']
+                humidity = base['main']['humidity']
 
-                count += 1
+                speed = base['wind']['speed']
+                date = base['dt_txt']
 
                 yield description, icon, temperature, feels_like, pressure, humidity, speed, date
             else:
                 break
 
 
-def add_message(func: Generator[list, tuple, None], interaction: Interaction, name: str) -> Embed:
+async def add_message(func: AsyncGenerator[list, tuple], interaction: Interaction, name: str) -> Embed:
     message = Embed(
         title=f"Погода в {name}",
         color=color,
         timestamp=datetime.datetime.now()
     )
 
-    for dt in func:
+    async for dt in func:
         if len(dt) == 8:
             message.add_field(name='**------------Дата-и-время------------**',
                               value=f'*----------{dt[-1]}----------*',
@@ -99,7 +97,7 @@ async def material(interaction: Interaction, info: tuple) -> Embed:
             name = info[0]['name']
         else:
             name = info[0]['city']['name']
-        return add_message(from_message(info), interaction, name)
+        return await add_message(from_message(info), interaction, name)
     else:
         error_message = Embed(
             title='Ошибка',

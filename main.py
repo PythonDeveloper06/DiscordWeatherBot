@@ -2,7 +2,7 @@ import datetime
 import asyncio
 
 import discord
-from discord import Member, Interaction
+from discord import Member, Interaction, app_commands, Embed
 from discord.ext.commands import Bot
 import logging
 
@@ -24,13 +24,13 @@ bot = Bot(command_prefix='/', intents=intents)
 
 @bot.event
 async def on_ready() -> None:
+    await bot.tree.sync()
     logger.info(f'{bot.user} has connected to Discord!')
     for guild in bot.guilds:
         logger.info(
             f'{bot.user} подключился к чату:\n'
             f'{guild.name} (ID: {guild.id})'
         )
-    await bot.tree.sync()
 
 
 @bot.event
@@ -74,19 +74,12 @@ async def support(interaction: Interaction):
     await interaction.response.send_message(embed=message, ephemeral=True)
 
 
-@bot.tree.command(name='weather', description='Get weather')
-async def weather(interaction: Interaction, city: str) -> None:
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+@bot.tree.command(name='weather', description='Get weather now or for the near future')
+@app_commands.choices(check_weather=[app_commands.Choice(name='Now', value='weather'),
+                                     app_commands.Choice(name='Forecast', value='forecast')])
+async def weather_and_forecast(interaction: Interaction, city: str, check_weather: app_commands.Choice[str]) -> None:
+    url = f'http://api.openweathermap.org/data/2.5/{check_weather.value}?q={city}&units=metric&lang=ru&appid={API_KEY}'
     data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
-
-    message_or_error_message = await material(interaction, data)
-    await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
-
-
-@bot.tree.command(name='forecast', description='Get weather for the nearest time, 3 and 6 hours ahead')
-async def forecast(interaction: Interaction, city: str) -> None:
-    url = f'http://api.openweathermap.org/data/2.5/forecast?q={city}&units=metric&lang=ru&appid={API_KEY}'
-    data = await asyncio.gather(api_weather(url))
 
     message_or_error_message = await material(interaction, data)
     await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
