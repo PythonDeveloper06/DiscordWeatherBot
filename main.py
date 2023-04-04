@@ -62,10 +62,18 @@ async def support(interaction: Interaction):
         color=color,
         timestamp=datetime.datetime.now()
     )
-    with open("support.txt", encoding='utf-8') as file:
-        text = file.read()
-    message.add_field(name='Погодный бот', value=text)
-
+    message.add_field(
+        name='Погодный бот',
+        value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
+              '*Это очень удобно и просто в использовании.*\n'
+              'Основные команды:\n'
+              '*/weather {city} {weather output}:*\n'
+              '*1.) {weather output} = Now: показывает погоду на данный момент заданного города;*\n'
+              '*2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;*\n'
+              '*/support: показывает то, что может погодный бот;*\n'
+              '*/set_time {city} {time (формат HH:MM)}: в установленное время бот выведет вам в личное сообщение '
+              'актуальную погоду*'
+    )
     await interaction.response.send_message(embed=message, ephemeral=True)
 
 
@@ -80,25 +88,28 @@ async def weather_and_forecast(interaction: Interaction, city: str, weather_outp
     await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
 
 
-@bot.command(name='set_time')
-async def set_time(ctx: Context, city: str, dt: str) -> None:
+@bot.command(name='set_time', description='Set the time')
+async def set_time(ctx: Context, city: str, dt: str, value: str = '1H') -> None:
     h, m = dt.split(':')
-    # while True для продакшнеа. В ТЕСТИРОВАНИИ НЕ ИСПОЛЬЗОВАТЬ! ЗАЦИКЛИТСЯ!
-    # Для тестирования while true закомментировать
-    # while True:
-    now = datetime.datetime.now()
-    # then = now + datetime.timedelta(days=1)
-    then = now.replace(hour=int(h), minute=int(m))
-    wait_time = (then - now).total_seconds()
+    while True:
+        now = datetime.datetime.now()
+        usl = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=int(h), minute=int(m))
+        if now < usl:
+            then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
+                   datetime.timedelta(hours=int(value[0]))
+        else:
+            then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + \
+                   datetime.timedelta(hours=int(value[0]))
+        wait_time = (then - now).total_seconds()
 
-    await asyncio.sleep(wait_time)
+        await asyncio.sleep(wait_time)
 
-    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
-    data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
-    message_or_error_message = await material(ctx, data)
+        message_or_error_message = await material(ctx, data)
 
-    await ctx.author.send(embed=message_or_error_message)
+        await ctx.author.send(embed=message_or_error_message)
 
 
 bot.run(TOKEN)
