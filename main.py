@@ -62,18 +62,10 @@ async def support(interaction: Interaction):
         color=color,
         timestamp=datetime.datetime.now()
     )
-    message.add_field(
-        name='Погодный бот',
-        value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
-              '*Это очень удобно и просто в использовании.*\n'
-              'Основные команды:\n'
-              '*/weather {city} {weather output}:*\n'
-              '*1.) {weather output} = Now: показывает погоду на данный момент заданного города;*\n'
-              '*2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;*\n'
-              '*/support: показывает то, что может погодный бот;*\n'
-              '*/set_time {city} {time (формат HH:MM)}: в установленное время бот выведет вам в личное сообщение '
-              'актуальную погоду*'
-    )
+    with open("support.txt", encoding='utf-8') as file:
+        text = file.read()
+    message.add_field(name='Погодный бот', value=text)
+
     await interaction.response.send_message(embed=message, ephemeral=True)
 
 
