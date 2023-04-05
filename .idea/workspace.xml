@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/support.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -281,7 +282,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680539596051</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="add automatic send message version 1.0">
+      <created>1680628249379</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1680628249379</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.History.Properties">
@@ -327,6 +335,7 @@
     <MESSAGE value="did async function and update code" />
     <MESSAGE value="add sending a message over time for users in personal message" />
     <MESSAGE value="update code, using a construct for earlier versions of the language" />
-    <option name="LAST_COMMIT_MESSAGE" value="update code, using a construct for earlier versions of the language" />
+    <MESSAGE value="add automatic send message version 1.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="add automatic send message version 1.0" />
   </component>
 </project>

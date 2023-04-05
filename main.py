@@ -24,7 +24,8 @@ bot = Bot(command_prefix='/', intents=intents)
 
 @bot.event
 async def on_ready() -> None:
-    await bot.tree.sync()
+    synced = await bot.tree.sync()
+    logger.info(f'Amount of connected Slash commands: {len(synced)}')
     logger.info(f'{bot.user} has connected to Discord!')
     for guild in bot.guilds:
         logger.info(
@@ -68,11 +69,18 @@ async def support(interaction: Interaction):
               '*Это очень удобно и просто в использовании.*\n'
               'Основные команды:\n'
               '*/weather {city} {weather output}:*\n'
-              '*1.) {weather output} = Now: показывает погоду на данный момент заданного города;*\n'
-              '*2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;*\n'
+              '1.) {weather output} = Now: показывает погоду на данный момент заданного города;\n'
+              '2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;\n'
               '*/support: показывает то, что может погодный бот;*\n'
-              '*/set_time {city} {time (формат HH:MM)}: в установленное время бот выведет вам в личное сообщение '
-              'актуальную погоду*'
+              '*/set_exact_time {city} {time (формат HH:MM)} {hours} {minutes}: '
+              'в установленное время бот будет выводить вам в личное сообщение '
+              'актуальную погоду:*\n'
+              '1.) {hours}: устанавливает нужный час (по умолчанию - 1 час). Для установки, '
+              'вводится нужный час и буква H на конце, например, 3H;\n'
+              '2.) {minutes}: устанавливет нужную минуту (по умолчанию - 0 минут). Для установки, '
+              'вводится нужная минута и буква М на конце, например, 3М;\n'
+              '*/set_time: в установленное время бот будет выводить вам каждый день в личное сообщение '
+              'актуальную погоду.*'
     )
     await interaction.response.send_message(embed=message, ephemeral=True)
 
@@ -88,26 +96,57 @@ async def weather_and_forecast(interaction: Interaction, city: str, weather_outp
     await interaction.response.send_message(embed=message_or_error_message, ephemeral=True)
 
 
-@bot.command(name='set_time', description='Set the time')
-async def set_time(ctx: Context, city: str, dt: str, value: str = '1H') -> None:
-    h, m = dt.split(':')
+@bot.command(name='set_exact_time')
+async def set_exact_time(ctx: Context, city: str, dt: str, hours: str = '1H', minutes: str = '0M') -> None:
+    h, m, *s = dt.split(':')
     while True:
         now = datetime.datetime.now()
+        logger.info(f'Time is now: {now}')
+
         usl = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=int(h), minute=int(m))
+        logger.info(f'Entered time: {usl}')
+
         if now < usl:
             then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
-                   datetime.timedelta(hours=int(value[0]))
+                   datetime.timedelta(hours=int(hours[0]), minutes=int(minutes[0]))
         else:
             then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + \
-                   datetime.timedelta(hours=int(value[0]))
+                   datetime.timedelta(hours=int(hours[0]), minutes=int(minutes[0]))
+        logger.info(f'Time of completion: {then}')
+
         wait_time = (then - now).total_seconds()
+        logger.info(f'Time of wait: {wait_time} seconds')
 
         await asyncio.sleep(wait_time)
 
         url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
         data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
-        message_or_error_message = await material(ctx, data)
+        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
+
+        await ctx.author.send(embed=message_or_error_message)
+
+        logger.info('---------------------------------------')
+
+
+@bot.command(name='set_time')
+async def set_time(ctx: Context, city: str, dt: str) -> None:
+    h, m, *s = dt.split(':')
+    while True:
+        now = datetime.datetime.now()
+        print(now)
+        then = now + datetime.timedelta(days=1)
+        print(then)
+        plan_time = then.replace(hour=int(h), minute=int(m), second=0)
+        print(plan_time)
+
+        wait_time = (plan_time - now).total_seconds()
+        await asyncio.sleep(wait_time)
+
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+
+        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
 
         await ctx.author.send(embed=message_or_error_message)
 
