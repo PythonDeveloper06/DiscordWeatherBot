@@ -1,6 +1,7 @@
 import datetime
 import asyncio
 
+import aiosqlite
 import discord
 from discord import Member, Interaction, app_commands
 from discord.ext.commands import Bot, Context
@@ -67,18 +68,20 @@ async def support(interaction: Interaction):
         name='Погодный бот',
         value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
               '*Это очень удобно и просто в использовании.*\n'
-              'Основные команды:\n'
+              '**Основные команды:**\n'
               '*/weather {city} {weather output}:*\n'
               '1.) {weather output} = Now: показывает погоду на данный момент заданного города;\n'
               '2.) {weather output} = Forecast: показывает погоду на ближайшее время, на 3 и на 6 часов вперёд;\n'
+              '---------------------------\n'
               '*/support: показывает то, что может погодный бот;*\n'
+              '---------------------------\n'
               '*/set_exact_time {city} {time (формат HH:MM)} {hours} {minutes}: '
-              'в установленное время бот будет выводить вам в личное сообщение '
-              'актуальную погоду:*\n'
+              'в установленное время бот будет выводить вам в личное сообщение актуальную погоду:*\n'
               '1.) {hours}: устанавливает нужный час (по умолчанию - 1 час). Для установки, '
               'вводится нужный час и буква H на конце, например, 3H;\n'
               '2.) {minutes}: устанавливет нужную минуту (по умолчанию - 0 минут). Для установки, '
               'вводится нужная минута и буква М на конце, например, 3М;\n'
+              '---------------------------\n'
               '*/set_time: в установленное время бот будет выводить вам каждый день в личное сообщение '
               'актуальную погоду.*'
     )
@@ -151,4 +154,9 @@ async def set_time(ctx: Context, city: str, dt: str) -> None:
         await ctx.author.send(embed=message_or_error_message)
 
 
+@bot.tree.command(name='registration', description='Set the city and time for the default weather display')
+async def regis(interaction: Interaction, member: Member, city: str, install_time: str):
+    print(member.display_name)
+    db = await aiosqlite.connect('bot.db')
+    await interaction.response.send_message(f'Ваш город **{city}** и время **{install_time}** было успешно сохранено')
 bot.run(TOKEN)
