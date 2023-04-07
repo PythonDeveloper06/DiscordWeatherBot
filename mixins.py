@@ -1,10 +1,13 @@
 import datetime
+import asyncio
 from typing import AsyncGenerator, Union
 import aiohttp
 from aiohttp import ClientResponse
 from discord import Member, Message, Interaction, Embed
 from discord.ext.commands import Bot, Context
 from discord.channel import TextChannel
+
+from config import API_KEY
 
 color = 0x00FFFF
 HPa_to_mmHg = 0.750064
@@ -104,3 +107,42 @@ async def material(interaction: Union[Interaction, Context], info: tuple) -> Emb
             color=color
         )
         return error_message
+
+
+async def auto_send(ctx: Context, city: str, date: str) -> AsyncGenerator[Embed, None]:
+    h, m, *s = date.split(':')
+    while True:
+        now = datetime.datetime.now()
+        print(f'Time is now: {now}')
+
+        usl = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=int(h), minute=int(m))
+        print(f'Entered time: {usl}')
+
+        if now < usl:
+            then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
+                   datetime.timedelta(minutes=2)
+        else:
+            then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + \
+                   datetime.timedelta(minutes=2)
+        print(f'Time of completion: {then}')
+
+        wait_time = (then - now).total_seconds()
+        print(f'Time of wait: {wait_time} seconds')
+
+        await asyncio.sleep(wait_time)
+        # now = datetime.datetime.now()
+        # then = now + datetime.timedelta(days=1)
+        # plan_time = then.replace(hour=int(h), minute=int(m), second=0)
+        # print(plan_time)
+
+        # wait_time = (plan_time - now).total_seconds()
+        # await asyncio.sleep(wait_time)
+
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+
+        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
+
+        yield message_or_error_message
+
+    yield Embed(title='Отправка сообщений остановлена', color=color, timestamp=ctx.message.created_at)

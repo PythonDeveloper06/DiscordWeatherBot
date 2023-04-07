@@ -8,7 +8,7 @@ from discord.ext.commands import Bot, Context
 import logging
 
 from config import TOKEN, API_KEY
-from mixins import on_member, api_weather, material
+from mixins import on_member, api_weather, material, auto_send
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
@@ -18,7 +18,6 @@ intents.members = True
 intents.message_content = True
 
 color = 0x00FFFF
-HPa_to_mmHg = 0.750064
 
 bot = Bot(command_prefix='/', intents=intents)
 
@@ -102,61 +101,58 @@ async def weather_and_forecast(interaction: Interaction, city: str, weather_outp
 @bot.command(name='set_exact_time')
 async def set_exact_time(ctx: Context, city: str, dt: str, hours: str = '1H', minutes: str = '0M') -> None:
     h, m, *s = dt.split(':')
-    while True:
-        now = datetime.datetime.now()
-        logger.info(f'Time is now: {now}')
+    now = datetime.datetime.now()
+    logger.info(f'Time is now: {now}')
 
-        usl = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=int(h), minute=int(m))
-        logger.info(f'Entered time: {usl}')
+    then = now.replace(hour=int(h), minute=int(m), second=0) + datetime.timedelta(hours=int(hours[0]),
+                                                                                  minutes=int(minutes[0]))
+    logger.info(f'Time of completion: {then}')
 
-        if now < usl:
-            then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
-                   datetime.timedelta(hours=int(hours[0]), minutes=int(minutes[0]))
-        else:
-            then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + \
-                   datetime.timedelta(hours=int(hours[0]), minutes=int(minutes[0]))
-        logger.info(f'Time of completion: {then}')
+    wait_time = (then - now).total_seconds()
+    logger.info(f'Time of wait: {wait_time} seconds')
 
-        wait_time = (then - now).total_seconds()
-        logger.info(f'Time of wait: {wait_time} seconds')
+    await asyncio.sleep(wait_time)
 
-        await asyncio.sleep(wait_time)
+    url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+    data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
-        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
-        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+    message_or_error_message = await asyncio.ensure_future(material(ctx, data))
 
-        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
+    await ctx.author.send(embed=message_or_error_message)
 
-        await ctx.author.send(embed=message_or_error_message)
-
-        logger.info('---------------------------------------')
+    logger.info('---------------------------------------')
 
 
 @bot.command(name='set_time')
 async def set_time(ctx: Context, city: str, dt: str) -> None:
-    h, m, *s = dt.split(':')
-    while True:
-        now = datetime.datetime.now()
-        print(now)
-        then = now + datetime.timedelta(days=1)
-        print(then)
-        plan_time = then.replace(hour=int(h), minute=int(m), second=0)
-        print(plan_time)
-
-        wait_time = (plan_time - now).total_seconds()
-        await asyncio.sleep(wait_time)
-
-        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
-        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
-
-        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
-
+    async for message_or_error_message in auto_send(ctx, city, dt, True):
         await ctx.author.send(embed=message_or_error_message)
 
 
 @bot.tree.command(name='registration', description='Set the city and time for the default weather display')
-async def regis(interaction: Interaction, member: Member, city: str, install_time: str):
-    print(member.display_name)
-    db = await aiosqlite.connect('bot.db')
-    await interaction.response.send_message(f'Ваш город **{city}** и время **{install_time}** было успешно сохранено')
+async def regis(interaction: Interaction, city: str, install_time: str):
+    try:
+        db = await aiosqlite.connect('bot.db')
+        await db.execute("INSERT INTO users VALUES(?, ?, ?)", (interaction.user.name, city, install_time))
+        await db.commit()
+        await interaction.response.send_message(
+            f'Ваш город **{city}** и время **{install_time}** было успешно сохранено',
+            ephemeral=True)
+    except Exception as e:
+        await interaction.response.send_message('Вы уже зарегистрировались', ephemeral=True)
+
+
+@bot.command(name='start', description='Starts automatic weather sending')
+async def start(ctx: Context) -> None:
+    try:
+        db = await aiosqlite.connect('bot.db')
+        data = await db.execute("SELECT city, installed_time FROM users WHERE username = ?", (ctx.author.name,))
+        res = await data.fetchone()
+        async for message_or_error_message in auto_send(ctx, res[0], res[1]):
+            await ctx.author.send(embed=message_or_error_message)
+    except Exception as e:
+        await ctx.author.send('Вы должны зарегистрироваться, чтобы использовать команду /start.\n'
+                              'Команда регистрации: /registration')
+
+
 bot.run(TOKEN)
