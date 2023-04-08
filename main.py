@@ -147,13 +147,16 @@ async def start(ctx: Context, value: str = 'on') -> None:
     db = await aiosqlite.connect('bot.db')
     data = await db.execute("SELECT city, installed_time FROM users WHERE username = ?", (ctx.author.name,))
     res = await data.fetchone()
-    result = auto_send(ctx, res[0], res[1])
-    task = await asyncio.create_task(result.__anext__())
+    # result = auto_send(ctx, res[0], res[1])
+    task = asyncio.create_task(auto_send(ctx, res[0], res[1]).__anext__())
     if value == 'off':
-        await result.aclose()
+        task.cancel()
+        # await result.aclose()
         await ctx.author.send('Отправка сообщений остановлена')
     else:
-        await ctx.author.send(embed=task)
+        # async for data in result:
+        data = await task
+        await ctx.author.send(embed=data)
 
 
 bot.run(TOKEN)
