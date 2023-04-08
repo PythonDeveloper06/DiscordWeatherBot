@@ -3,7 +3,7 @@ import asyncio
 
 import aiosqlite
 import discord
-from discord import Member, Interaction, app_commands
+from discord import Member, Interaction, app_commands, Embed
 from discord.ext.commands import Bot, Context
 import logging
 
@@ -125,7 +125,7 @@ async def set_exact_time(ctx: Context, city: str, dt: str, hours: str = '1H', mi
 
 @bot.command(name='set_time')
 async def set_time(ctx: Context, city: str, dt: str) -> None:
-    async for message_or_error_message in auto_send(ctx, city, dt, True):
+    async for message_or_error_message in auto_send(ctx, city, dt):
         await ctx.author.send(embed=message_or_error_message)
 
 
@@ -143,16 +143,17 @@ async def regis(interaction: Interaction, city: str, install_time: str):
 
 
 @bot.command(name='start', description='Starts automatic weather sending')
-async def start(ctx: Context) -> None:
-    try:
-        db = await aiosqlite.connect('bot.db')
-        data = await db.execute("SELECT city, installed_time FROM users WHERE username = ?", (ctx.author.name,))
-        res = await data.fetchone()
-        async for message_or_error_message in auto_send(ctx, res[0], res[1]):
-            await ctx.author.send(embed=message_or_error_message)
-    except Exception as e:
-        await ctx.author.send('Вы должны зарегистрироваться, чтобы использовать команду /start.\n'
-                              'Команда регистрации: /registration')
+async def start(ctx: Context, value: str = 'on') -> None:
+    db = await aiosqlite.connect('bot.db')
+    data = await db.execute("SELECT city, installed_time FROM users WHERE username = ?", (ctx.author.name,))
+    res = await data.fetchone()
+    result = auto_send(ctx, res[0], res[1])
+    task = await asyncio.create_task(result.__anext__())
+    if value == 'off':
+        await result.aclose()
+        await ctx.author.send('Отправка сообщений остановлена')
+    else:
+        await ctx.author.send(embed=task)
 
 
 bot.run(TOKEN)

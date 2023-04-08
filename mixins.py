@@ -109,7 +109,7 @@ async def material(interaction: Union[Interaction, Context], info: tuple) -> Emb
         return error_message
 
 
-async def auto_send(ctx: Context, city: str, date: str) -> AsyncGenerator[Embed, None]:
+async def auto_send(ctx: Context, city: str, date: str):
     h, m, *s = date.split(':')
     while True:
         now = datetime.datetime.now()
@@ -120,10 +120,10 @@ async def auto_send(ctx: Context, city: str, date: str) -> AsyncGenerator[Embed,
 
         if now < usl:
             then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
-                   datetime.timedelta(minutes=2)
+                   datetime.timedelta(minutes=1)
         else:
-            then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour, minute=now.minute) + \
-                   datetime.timedelta(minutes=2)
+            then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour,
+                                     minute=now.minute) + datetime.timedelta(minutes=1)
         print(f'Time of completion: {then}')
 
         wait_time = (then - now).total_seconds()
@@ -142,7 +142,4 @@ async def auto_send(ctx: Context, city: str, date: str) -> AsyncGenerator[Embed,
         data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
         message_or_error_message = await asyncio.ensure_future(material(ctx, data))
-
         yield message_or_error_message
-
-    yield Embed(title='Отправка сообщений остановлена', color=color, timestamp=ctx.message.created_at)
