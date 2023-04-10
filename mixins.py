@@ -110,33 +110,50 @@ async def material(interaction: Union[Interaction, Context], info: tuple) -> Emb
 
 
 async def auto_send(ctx: Context, city: str, date: str):
+    print('------------------------------------------------')
     h, m, *s = date.split(':')
     while True:
         now = datetime.datetime.now()
         print(f'Time is now: {now}')
+        then = now + datetime.timedelta(days=1)
+        print(f'Time + 1 day: {then}')
+        plan_time = then.replace(hour=int(h), minute=int(m), second=0)
+        print(f'Time of completion: {plan_time}')
 
+        wait_time = (plan_time - now).total_seconds()
+        print(f'Time of wait: {wait_time} seconds')
+        print('------------------------------------------------')
+
+        await asyncio.sleep(wait_time)
+
+        url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
+        data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
+
+        message_or_error_message = await asyncio.ensure_future(material(ctx, data))
+        yield message_or_error_message
+
+
+async def auto_send_hour(ctx: Context, city: str, date: str):
+    print('------------------------------------------------')
+    h, m, *s = date.split(':')
+    while True:
+        now = datetime.datetime.now()
+        print(f'Time is now: {now}')
         usl = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=int(h), minute=int(m))
         print(f'Entered time: {usl}')
 
         if now < usl:
             then = datetime.datetime.now().replace(hour=int(h), minute=int(m), second=0) + \
-                   datetime.timedelta(minutes=1)
+                   datetime.timedelta(hours=1)
         else:
             then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour,
-                                     minute=now.minute) + datetime.timedelta(minutes=1)
+                                     minute=now.minute) + datetime.timedelta(hours=1)
         print(f'Time of completion: {then}')
-
         wait_time = (then - now).total_seconds()
         print(f'Time of wait: {wait_time} seconds')
+        print('------------------------------------------------')
 
         await asyncio.sleep(wait_time)
-        # now = datetime.datetime.now()
-        # then = now + datetime.timedelta(days=1)
-        # plan_time = then.replace(hour=int(h), minute=int(m), second=0)
-        # print(plan_time)
-
-        # wait_time = (plan_time - now).total_seconds()
-        # await asyncio.sleep(wait_time)
 
         url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
         data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
