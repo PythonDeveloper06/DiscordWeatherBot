@@ -114,6 +114,19 @@ async def support(interaction: Interaction):
               'в нужное время cообщение и рассылка прекратится**',
         inline=False
     )
+    message.add_field(
+        name='---------------------------',
+        value='*Это музыкальная составляющая погодного бота, вы можете прослушать на выбор 3 звука природы:*'
+              '*1-Гроза;*'
+              '*2-Сверчки;*'
+              '*3-Шум реки.*'
+              '*/join - присоединение бота к голосовому каналу*'
+              '*/disconnect - отключение бота из голосового канала*'
+              '*/play - проигрывание музыки*'
+              '*/pause - остановка проигрывания музыки*'
+              '*/resume - воспроизведение проигрывания музыки*',
+        inline=False
+    )
     await interaction.response.send_message(embed=message, ephemeral=True)
 
 
@@ -241,5 +254,60 @@ async def update(interaction: Interaction, city: str = '-', dt: str = '-'):
                                                             color=color, timestamp=datetime.datetime.now()),
                                                 ephemeral=True)
 
+
+@bot.command(name='join', description='Tells the bot to join the voice channel')
+async def join(ctx):
+    if ctx.message.author.voice:
+        if not ctx.voice_client:
+            await ctx.message.author.voice.channel.connect(reconnect=True)
+        else:
+            await ctx.voice_client.move_to(ctx.message.author.voice.channel)
+    else:
+        await ctx.message.reply('❗ Вы должны находиться в голосовом канале ❗')
+
+
+@bot.command(name='disconnect', description='To make the bot leave the voice channel')
+async def disconnect(ctx):
+    if ctx.voice_client:
+        await ctx.voice_client.disconnect()
+    else:
+        await ctx.message.reply('❗ Бот не подключен к голосовому каналу ❗')
+
+
+@bot.command(name='play', description='To play song')
+async def play(ctx, *, file_name: str):
+    try:
+        server = ctx.message.guild
+        voice_channel = server.voice_client
+        async with ctx.typing():
+            audio_file = f'audio_files/{file_name}.mp3'
+            voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg/ffmpeg.exe", source=audio_file))
+    except:
+        await ctx.message.reply("❗ Бот не подключен к голосовому каналу ❗")
+
+
+@bot.command(name='pause', description='Stops the song')
+async def pause(ctx):
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if voice:
+        voice.pause()
+        await ctx.message.reply('Музыка приостановлена.')
+
+
+@bot.command(name='resume', description='Resumes the song')
+async def resume(ctx):
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    if voice:
+        if voice.is_paused():
+            voice.resume()
+            await ctx.message.reply('Музыка продолжается.')
+
+
+@bot.event
+async def on_voice_state_update(member, before, after):
+    voice = discord.utils.get(bot.voice_clients, guild=member.guild)
+    if voice and voice.is_connected():
+        if len(voice.channel.members) == 1:
+            await voice.disconnect()
 
 bot.run(TOKEN)
