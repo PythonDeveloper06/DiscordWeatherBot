@@ -85,8 +85,10 @@ async def support(interaction: Interaction):
               'вводится нужный час и буква H на конце, например, 3H;\n'
               '2.) {minutes}: устанавливет нужную минуту (по умолчанию - 0 минут). Для установки, '
               'вводится нужная минута и буква М на конце, например, 3М;\n'
-              '---------------------------\n'
-              '*/set_time {value} {city} {time}: в установленное время бот будет выводить вам каждый час '
+    )
+    message.add_field(
+        name='---------------------------\n',
+        value='*/set_time {value} {city} {time}: в установленное время бот будет выводить вам каждый час '
               'в личное сообщение актуальную погоду;*\n'
               '1.) {value} = on: запускает автоматическую отправку погоды указанного города;\n'
               '2.) {weather output} = off: останавливает отправку сообщений;\n'
@@ -100,7 +102,7 @@ async def support(interaction: Interaction):
     message.add_field(
         name='---------------------------',
         value='*/registration: вводится город и время, '
-              'которые сохраняются и затем используются для вывода погоды '
+             'которые сохраняются и затем используются для вывода погоды '
               'в нужное время и каждый день;*\n'
               '---------------------------\n'
               '*/start {value (по умолчанию = on)}: при вызове команды, '
@@ -111,20 +113,20 @@ async def support(interaction: Interaction):
               '**Из - за особенности работы работы команды /start, вам для остановки рассылки сообщений '
               'нужно будет ввести команду /start off ЗА 1 ДЕНЬ до назначенного дня, когда вы захотите '
               'прекратить рассылку сообщений. В назначенный день бот пришлёт вам'
-              'в нужное время cообщение и рассылка прекратится**',
+              'в нужное время cообщение и рассылка прекратится**\n',
         inline=False
     )
     message.add_field(
         name='---------------------------',
-        value='*Это музыкальная составляющая погодного бота, вы можете прослушать на выбор 3 звука природы:*'
-              '*1-Гроза;*'
-              '*2-Сверчки;*'
-              '*3-Шум реки.*'
-              '*/join - присоединение бота к голосовому каналу*'
-              '*/disconnect - отключение бота из голосового канала*'
-              '*/play - проигрывание музыки*'
-              '*/pause - остановка проигрывания музыки*'
-              '*/resume - воспроизведение проигрывания музыки*',
+        value='*Это музыкальная составляющая погодного бота, вы можете прослушать на выбор 3 звука природы:*\n'
+              '*1-Гроза;*\n'
+              '*2-Сверчки;*\n'
+              '*3-Шум реки.*\n'
+              '*/join - присоединение бота к голосовому каналу*\n'
+              '*/disconnect - отключение бота из голосового канала*\n'
+              '*/play - проигрывание музыки*\n'
+              '*/pause - остановка проигрывания музыки*\n'
+              '*/resume - воспроизведение проигрывания музыки*\n',
         inline=False
     )
     await interaction.response.send_message(embed=message, ephemeral=True)
@@ -256,7 +258,7 @@ async def update(interaction: Interaction, city: str = '-', dt: str = '-'):
 
 
 @bot.command(name='join', description='Tells the bot to join the voice channel')
-async def join(ctx):
+async def join(ctx: Context) -> None:
     if ctx.message.author.voice:
         if not ctx.voice_client:
             await ctx.message.author.voice.channel.connect(reconnect=True)
@@ -267,7 +269,7 @@ async def join(ctx):
 
 
 @bot.command(name='disconnect', description='To make the bot leave the voice channel')
-async def disconnect(ctx):
+async def disconnect(ctx: Context) -> None:
     if ctx.voice_client:
         await ctx.voice_client.disconnect()
     else:
@@ -275,7 +277,7 @@ async def disconnect(ctx):
 
 
 @bot.command(name='play', description='To play song')
-async def play(ctx, *, file_name: str):
+async def play(ctx: Context, *, file_name: str) -> None:
     try:
         server = ctx.message.guild
         voice_channel = server.voice_client
@@ -287,7 +289,7 @@ async def play(ctx, *, file_name: str):
 
 
 @bot.command(name='pause', description='Stops the song')
-async def pause(ctx):
+async def pause(ctx: Context) -> None:
     voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
     if voice:
         voice.pause()
@@ -295,7 +297,7 @@ async def pause(ctx):
 
 
 @bot.command(name='resume', description='Resumes the song')
-async def resume(ctx):
+async def resume(ctx: Context) -> None:
     voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
     if voice:
         if voice.is_paused():
@@ -304,7 +306,7 @@ async def resume(ctx):
 
 
 @bot.event
-async def on_voice_state_update(member, before, after):
+async def on_voice_state_update(member: Member, before, after) -> None:
     voice = discord.utils.get(bot.voice_clients, guild=member.guild)
     if voice and voice.is_connected():
         if len(voice.channel.members) == 1:

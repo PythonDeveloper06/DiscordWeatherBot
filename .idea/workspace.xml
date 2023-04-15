@@ -7,7 +7,12 @@
     <cargoProject FILE="$PROJECT_DIR$/../Learn_Rust_in_PC/Cargo.toml" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="update info" />
+    <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="update info">
+      <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/mixins.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

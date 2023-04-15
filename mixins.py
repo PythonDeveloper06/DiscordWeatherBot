@@ -82,8 +82,7 @@ async def add_message(func: AsyncGenerator[list, tuple], name: str, user: str) -
         message.add_field(
             name="Влажность", value=f"**{dt[5]}%**", inline=False)
         message.add_field(
-            name="Атмосферное давление", value=f"**{round(int(dt[4]) * HPa_to_mmHg)}мм рт. ст.**",
-            inline=False)
+            name="Атмосферное давление", value=f"**{round(int(dt[4]) * HPa_to_mmHg)}мм рт. ст.**", inline=False)
         message.add_field(
             name="Скорость ветра", value=f"**{dt[6]}м/с**", inline=False)
 
