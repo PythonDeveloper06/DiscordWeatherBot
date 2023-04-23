@@ -1,6 +1,6 @@
 import datetime
 import asyncio
-
+import os.path
 from sqlalchemy import select, update
 import discord
 from discord import Member, Interaction, app_commands, Embed
@@ -155,7 +155,6 @@ async def set_exact_time(ctx: Context, city: str, dt: str, hours: str = '1H', mi
     wait_time = (then - now).total_seconds()
     logger.info(f'Time of wait: {wait_time} seconds')
     await asyncio.sleep(wait_time)
-
     url = f'http://api.openweathermap.org/data/2.5/weather?q={city}&units=metric&lang=ru&appid={API_KEY}'
     data = await asyncio.gather(asyncio.ensure_future(api_weather(url)))
 
@@ -283,6 +282,8 @@ async def play(ctx: Context, *, file_name: str) -> None:
         voice_channel = server.voice_client
         async with ctx.typing():
             audio_file = f'audio_files/{file_name}.mp3'
+            if not os.path.isfile(audio_file):
+                await ctx.message.reply('Такой музыки нет. Проверьте наличие файла или его название.')
             voice_channel.play(discord.FFmpegPCMAudio(executable="ffmpeg/ffmpeg.exe", source=audio_file))
     except:
         await ctx.message.reply("❗ Бот не подключен к голосовому каналу ❗")
