@@ -1,12 +1,13 @@
-import datetime
 import asyncio
+import datetime
 from typing import AsyncGenerator, Union
+
 import aiohttp
 from aiohttp import ClientResponse
 from discord import Member, Message, Interaction, Embed
-from discord.ext.commands import Bot, Context
 from discord.channel import TextChannel
-import pytest
+from discord.ext.commands import Bot, Context
+
 from config import API_KEY
 
 color = 0x00FFFF
@@ -106,11 +107,8 @@ async def material(interaction: Union[Interaction, Context], info: tuple) -> Emb
             color=color
         )
         return error_message
-def test_existing_city():
-    assert material('Омск') == add_message(from_message(info), name, user)
 
-def test_non_city():
-    assert material('абырвалг') != add_message(from_message(info), name, user)
+
 async def auto_send(ctx: Context, city: str, date: str):
     print('------------------------------------------------')
     h, m, *s = date.split(':')
