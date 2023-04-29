@@ -1,7 +1,7 @@
 import datetime
 import asyncio
 import os.path
-from sqlalchemy import select, update
+from sqlalchemy import select
 import discord
 from discord import Member, Interaction, app_commands, Embed
 from discord.ext.commands import Bot, Context
@@ -70,7 +70,7 @@ async def support(interaction: Interaction):
     )
     message.add_field(
         name='Погодный бот',
-        value='*Я буду полезнен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
+        value='*Я буду полезен, когда вам потребуется узнать погоду, не выходя из дискорда.*\n'
               '*Это очень удобно и просто в использовании.*\n'
               '**Основные команды:**\n'
               '*/weather {city} {weather output}:*\n'
@@ -79,40 +79,38 @@ async def support(interaction: Interaction):
               '---------------------------\n'
               '*/support: показывает то, что может погодный бот;*\n'
               '---------------------------\n'
-              '*/set_exact_time {city} {time (формат HH:MM)} {hours} {minutes}: '
+              '*/set_exact_time {city} {time (формат HH:MM)}: '
               'в установленное время бот выведет вам в личное сообщение актуальную погоду:*\n'
-              '1.) {hours}: устанавливает нужный час (по умолчанию - 1 час). Для установки, '
-              'вводится нужный час и буква H на конце, например, 3H;\n'
-              '2.) {minutes}: устанавливет нужную минуту (по умолчанию - 0 минут). Для установки, '
-              'вводится нужная минута и буква М на конце, например, 3М;\n'
     )
     message.add_field(
         name='---------------------------\n',
-        value='*/set_time {value} {city} {time}: в установленное время бот будет выводить вам каждый час '
-              'в личное сообщение актуальную погоду;*\n'
+        value='*/set_time {value} {city} {time (формат HH:MM)}: в установленное время бот будет выводить '
+              'вам каждый час в личное сообщение актуальную погоду;*\n'
               '1.) {value} = on: запускает автоматическую отправку погоды указанного города;\n'
-              '2.) {weather output} = off: останавливает отправку сообщений;\n'
+              '2.) {value} = off: останавливает отправку сообщений;\n'
               '**!!!Предупреждение!!!**\n'
               '**Из - за особенности работы работы команды /set_time, вам для остановки рассылки сообщений '
               'нужно будет ввести команду /set_time off ЗА 1 ЧАС до назначенного часа, когда вы захотите '
-              'прекратить рассылку сообщений. В назначенный час бот пришлёт вам'
-              'в нужное время cообщение и рассылка прекратится**',
+              'прекратить рассылку сообщений. В назначенный час бот пришлёт вам '
+              'в нужное время cообщение и рассылка прекратится.**',
         inline=False
     )
     message.add_field(
         name='---------------------------',
-        value='*/registration: вводится город и время, '
+        value='*/registration: вводится город и время (формат HH:MM), '
              'которые сохраняются и затем используются для вывода погоды '
               'в нужное время и каждый день;*\n'
               '---------------------------\n'
+              '*/update: обновление данных, введённых в команде /registration;*\n'
+              '---------------------------\n'
               '*/start {value (по умолчанию = on)}: при вызове команды, '
-              'автоматически каждый день во время, введённое при вызове команды /registration '
+              'автоматически каждый день во время, введённое при вызове команды /registration, '
               'будет выводиться погода для города, введённого при вызове команды /registration. '
               'Команда остановки: /start off.*\n'
               '**!!!Предупреждение!!!**\n'
               '**Из - за особенности работы работы команды /start, вам для остановки рассылки сообщений '
               'нужно будет ввести команду /start off ЗА 1 ДЕНЬ до назначенного дня, когда вы захотите '
-              'прекратить рассылку сообщений. В назначенный день бот пришлёт вам'
+              'прекратить рассылку сообщений. В назначенный день бот пришлёт вам '
               'в нужное время cообщение и рассылка прекратится**\n',
         inline=False
     )
@@ -144,13 +142,12 @@ async def weather_and_forecast(interaction: Interaction, city: str, weather_outp
 
 
 @bot.command(name='set_exact_time')
-async def set_exact_time(ctx: Context, city: str, dt: str, hours: str = '1H', minutes: str = '0M') -> None:
+async def set_exact_time(ctx: Context, city: str, dt: str) -> None:
     logger.info('---------------------------------------')
     h, m, *s = dt.split(':')
     now = datetime.datetime.now()
     logger.info(f'Time is now: {now}')
-    then = now.replace(hour=int(h), minute=int(m), second=0) + datetime.timedelta(hours=int(hours[0]),
-                                                                                  minutes=int(minutes[0]))
+    then = now.replace(hour=int(h), minute=int(m), second=0)
     logger.info(f'Time of completion: {then}')
     wait_time = (then - now).total_seconds()
     logger.info(f'Time of wait: {wait_time} seconds')
@@ -218,7 +215,8 @@ async def start(ctx: Context, value: str = 'on') -> None:
             # async for data in result:
             await ctx.author.send(embed=(await task))
     except Exception:
-        await ctx.author.send(embed=Embed(title='Сначала нужно зарегистрироваться.\nКоманда регистрации: /registration',
+        await ctx.author.send(embed=Embed(title='Сначала нужно зарегистрироваться.\n'
+                                                'Команда регистрации: /registration',
                                           color=color, timestamp=ctx.message.created_at))
 
 
@@ -242,7 +240,7 @@ async def update(interaction: Interaction, city: str = '-', dt: str = '-'):
             await interaction.response.send_message(embed=Embed(title=f'Ваш город успешно обновлён', color=color,
                                                                 timestamp=datetime.datetime.now()),
                                                     ephemeral=True)
-        elif dt == '-' and city == '-':
+        elif dt != '-' and city != '-':
             result.city = city
             result.installed_time = dt
             await db_sess.commit()

@@ -147,7 +147,7 @@ async def auto_send_hour(ctx: Context, city: str, date: str):
                    datetime.timedelta(hours=1)
         else:
             then = datetime.datetime(year=now.year, month=now.month, day=now.day, hour=now.hour,
-                                     minute=now.minute) + datetime.timedelta(hours=1)
+                                     minute=now.minute, second=0) + datetime.timedelta(hours=1)
         print(f'Time of completion: {then}')
         wait_time = (then - now).total_seconds()
         print(f'Time of wait: {wait_time} seconds')
