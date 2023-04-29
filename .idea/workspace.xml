@@ -8,11 +8,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="42ceb448-0087-4f43-9640-5bdca5931825" name="Changes" comment="last commit">
+      <change afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.env" beforeDir="false" afterPath="$PROJECT_DIR$/.env" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot.db" beforeDir="false" afterPath="$PROJECT_DIR$/bot.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mixins.py" beforeDir="false" afterPath="$PROJECT_DIR$/mixins.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,12 +44,15 @@
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ledne/OneDrive/Рабочий стол/Rust and Kotlin/Learn_Rust_in_PC&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/ledne/OneDrive/Рабочий стол/Питон/DiscordWeatherBot&quot;,
     &quot;org.rust.cargo.project.model.PROJECT_DISCOVERY&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;language.rust.cargo.check&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ledne\OneDrive\Рабочий стол\Питон\DiscordWeatherBot" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\ledne\OneDrive\Рабочий стол\Питон\DiscordWeatherBot\data" />
     </key>
@@ -353,8 +354,18 @@
       <option name="project" value="LOCAL" />
       <updated>1682507633585</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="last commit">
+      <created>1682758329273</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1682758329273</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="requirements.txt" />
   </component>
   <component name="Vcs.Log.History.Properties">
     <option name="COLUMN_ID_ORDER">
@@ -403,6 +414,7 @@
     <MESSAGE value="update auto send messages" />
     <MESSAGE value="update" />
     <MESSAGE value="add tests" />
-    <option name="LAST_COMMIT_MESSAGE" value="add tests" />
+    <MESSAGE value="last commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="last commit" />
   </component>
 </project>
